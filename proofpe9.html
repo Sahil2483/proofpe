@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProofPe - Trusted Platform</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+
+body{
+background:linear-gradient(135deg,#0f2f6b,#1e56b4);
+min-height:100vh;
+}
+
+/* AUTH */
+.auth-wrapper{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:20px;
+}
+
+.auth-card{
+background:white;
+width:100%;
+max-width:380px;
+border-radius:25px;
+padding:30px 25px;
+box-shadow:0 20px 50px rgba(0,0,0,0.3);
+animation:fadeIn .4s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.logo{text-align:center;margin-bottom:20px}
+.logo h1{color:#1e56b4}
+.logo p{font-size:13px;color:#777}
+
+input,select{
+width:100%;
+padding:14px;
+margin:8px 0;
+border-radius:14px;
+border:1px solid #ddd;
+font-size:15px;
+}
+
+input:focus{
+border-color:#1e56b4;
+outline:none;
+box-shadow:0 0 0 3px rgba(30,86,180,0.15);
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:30px;
+background:#1e56b4;
+color:white;
+font-size:16px;
+margin-top:10px;
+cursor:pointer;
+}
+
+.switch-text{
+text-align:center;
+margin-top:12px;
+font-size:14px;
+}
+
+.switch-text span{
+color:#1e56b4;
+font-weight:600;
+cursor:pointer;
+}
+
+.error-msg{
+color:red;
+font-size:13px;
+margin-top:5px;
+display:none;
+}
+
+/* DASHBOARD */
+.hidden{display:none}
+
+.header{
+color:white;
+text-align:center;
+padding:20px 10px;
+font-size:26px;
+font-weight:bold;
+}
+
+.dashboard-container{
+background:white;
+margin:15px;
+padding:20px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+}
+
+.logout{
+cursor:pointer;
+font-size:13px;
+color:#1e56b4;
+text-align:center;
+}
+
+.docCard{
+background:#f4f6fa;
+padding:15px;
+margin-top:15px;
+border-radius:15px;
+}
+
+.blueTick{
+color:#1e56b4;
+font-weight:bold;
+font-size:12px;
+}
+
+.actionRow{
+display:flex;
+justify-content:space-between;
+margin-top:10px;
+}
+
+.actionBtn{
+width:48%;
+padding:8px;
+border-radius:20px;
+text-align:center;
+cursor:pointer;
+font-size:14px;
+color:white;
+}
+
+.viewBtn{background:#1e56b4}
+.deleteBtn{background:red}
+
+/* Preview */
+#previewModal{
+display:none;
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:rgba(0,0,0,0.8);
+justify-content:center;
+align-items:center;
+z-index:1000;
+}
+
+#previewBox{
+background:white;
+width:95%;
+height:90%;
+border-radius:15px;
+padding:10px;
+overflow:auto;
+position:relative;
+}
+
+#closeBtn{
+position:absolute;
+right:10px;
+top:10px;
+background:red;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:10px;
+cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div id="authSection" class="auth-wrapper">
+
+<div class="auth-card">
+
+<div class="logo">
+<h1>ProofPe</h1>
+<p>Trusted Platform</p>
+</div>
+
+<h3 id="formTitle">Login</h3>
+
+<input type="text" id="nameInput" placeholder="Full Name" style="display:none">
+<input type="email" id="emailInput" placeholder="Email">
+<input type="password" id="passwordInput" placeholder="Password">
+
+<div class="error-msg" id="errorBox"></div>
+
+<button onclick="submitAuth()">Continue</button>
+
+<div class="switch-text" id="switchText">
+Don't have account? <span onclick="toggleForm()">Sign Up</span>
+</div>
+
+</div>
+</div>
+
+<div id="dashboardSection" class="hidden">
+
+<div class="header">
+ProofPe<br>
+<span style="font-size:14px;font-weight:normal">Trusted Platform</span>
+</div>
+
+<div class="dashboard-container">
+
+<div class="topbar">
+<div id="welcomeText"></div>
+<div class="logout" onclick="logout()">🚪<br>Logout</div>
+</div>
+
+<h3>Upload Document</h3>
+
+<select id="docType">
+<option value="">Select Document</option>
+
+<optgroup label="Identity">
+<option>Aadhaar Card</option>
+<option>PAN Card</option>
+<option>Passport</option>
+<option>Voter ID</option>
+<option>Driving License</option>
+<option>Ration Card</option>
+<option>Birth Certificate</option>
+<option>Bank Passbook</option>
+<option>Domicile Certificate</option>
+<option>Caste Certificate</option>
+<option>Income Certificate</option>
+</optgroup>
+
+<optgroup label="Education">
+<option>10th Marksheet</option>
+<option>12th Marksheet</option>
+<option>Graduation Marksheet</option>
+<option>Graduation Degree</option>
+<option>Post Graduation Marksheet</option>
+<option>Post Graduation Degree</option>
+<option>Diploma Certificate</option>
+</optgroup>
+
+<optgroup label="Employment">
+<option>Offer Letter</option>
+<option>Experience Letter</option>
+<option>Salary Slip</option>
+<option>Appointment Letter</option>
+</optgroup>
+
+<optgroup label="Financial">
+<option>Bank Passbook</option>
+<option>Cancelled Cheque</option>
+<option>Bank Statement</option>
+<option>Loan Agreement</option>
+<option>Insurance Policy</option>
+</optgroup>
+
+<optgroup label="Property & Utility">
+<option>Sale Deed</option>
+<option>Electricity Bill</option>
+<option>Water Bill</option>
+<option>Gas Bill</option>
+<option>Property Tax Receipt</option>
+</optgroup>
+
+</select>
+
+<input type="file" id="fileInput">
+<button onclick="uploadDoc()">Upload</button>
+
+<h3 style="margin-top:20px">My Documents</h3>
+<div id="docList"></div>
+
+</div>
+</div>
+
+<div id="previewModal">
+<div id="previewBox">
+<button id="closeBtn" onclick="closePreview()">X</button>
+<div id="previewContent"></div>
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyBy1Tg5YyNMEdDZunWONMfBijGZmWiJHRU",
+authDomain:"proofpe.firebaseapp.com",
+projectId:"proofpe"
+};
+
+initializeApp(firebaseConfig);
+const auth=getAuth();
+const db=getFirestore();
+
+let isLogin=true;
+
+window.toggleForm=()=>{
+isLogin=!isLogin;
+errorBox.style.display="none";
+if(isLogin){
+formTitle.innerText="Login";
+nameInput.style.display="none";
+switchText.innerHTML=`Don't have account? <span onclick="toggleForm()">Sign Up</span>`;
+}else{
+formTitle.innerText="Sign Up";
+nameInput.style.display="block";
+switchText.innerHTML=`Already have account? <span onclick="toggleForm()">Sign In</span>`;
+}
+}
+
+window.submitAuth=async()=>{
+const email=emailInput.value.trim();
+const pass=passwordInput.value.trim();
+const name=nameInput.value.trim();
+errorBox.style.display="none";
+
+if(!email||!pass){showError("Please fill all fields.");return;}
+
+try{
+if(isLogin){
+await signInWithEmailAndPassword(auth,email,pass);
+}else{
+if(!name){showError("Enter full name.");return;}
+await createUserWithEmailAndPassword(auth,email,pass);
+}
+}catch(error){
+if(error.code==="auth/user-not-found")showError("Account not found.");
+else if(error.code==="auth/wrong-password")showError("Incorrect password.");
+else if(error.code==="auth/email-already-in-use")showError("Email already registered.");
+else if(error.code==="auth/weak-password")showError("Password must be at least 6 characters.");
+else showError("Invalid credentials.");
+}
+}
+
+function showError(msg){
+errorBox.innerText=msg;
+errorBox.style.display="block";
+}
+
+window.logout=()=>signOut(auth);
+
+onAuthStateChanged(auth,user=>{
+if(user){
+authSection.classList.add("hidden");
+dashboardSection.classList.remove("hidden");
+welcomeText.innerText="Welcome, "+user.email;
+loadDocs();
+}else{
+dashboardSection.classList.add("hidden");
+authSection.classList.remove("hidden");
+}
+});
+
+window.uploadDoc=async()=>{
+const file=fileInput.files[0];
+const type=docType.value;
+if(!file||!type){alert("Select document & file");return;}
+
+const formData=new FormData();
+formData.append("file",file);
+formData.append("upload_preset","proofpe_unsigned");
+
+const res=await fetch("https://api.cloudinary.com/v1_1/ddfkdh1km/upload",{method:"POST",body:formData});
+const data=await res.json();
+
+await addDoc(collection(db,"documents"),{
+uid:auth.currentUser.uid,
+type:type,
+url:data.secure_url
+});
+
+alert("Uploaded");
+loadDocs();
+}
+
+async function loadDocs(){
+docList.innerHTML="";
+const snapshot=await getDocs(collection(db,"documents"));
+snapshot.forEach(d=>{
+if(d.data().uid===auth.currentUser.uid){
+docList.innerHTML+=`
+<div class="docCard">
+<b>${d.data().type}</b><br>
+<span class="blueTick">✔ Verified Platform</span>
+<div class="actionRow">
+<div class="actionBtn viewBtn" onclick="previewDoc('${d.data().url}')">View</div>
+<div class="actionBtn deleteBtn" onclick="deleteDocConfirm('${d.id}')">Delete</div>
+</div>
+</div>`;
+}
+});
+}
+
+window.previewDoc=(url)=>{
+if(url.includes(".pdf")){
+previewContent.innerHTML=`<iframe src="${url}" style="width:100%;height:100%;border:none;"></iframe>`;
+}else{
+previewContent.innerHTML=`<img src="${url}" style="width:100%">`;
+}
+previewModal.style.display="flex";
+}
+
+window.closePreview=()=>previewModal.style.display="none";
+
+window.deleteDocConfirm=async(id)=>{
+const pass=prompt("Enter password to delete:");
+if(!pass)return;
+const credential=EmailAuthProvider.credential(auth.currentUser.email,pass);
+try{
+await reauthenticateWithCredential(auth.currentUser,credential);
+await deleteDoc(doc(db,"documents",id));
+alert("Deleted");
+loadDocs();
+}catch(e){alert("Wrong password");}
+}
+</script>
+</body>
+</html>
